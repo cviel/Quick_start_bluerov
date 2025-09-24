@@ -1,0 +1,65 @@
+
+
+
+1) installer QGroundControl :
+
+https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html
+
+-> creer le network pour s'y connecter
+
+
+2) installer ROS2
+
+https://docs.ros.org/en/humble/Installation.html
+
+3) installer MAVROS2
+
+https://github.com/mavlink/mavros/blob/master/mavros/README.md#installation
+
+
+4) installer node_joy
+sudo apt update
+sudo apt install ros-humble-joy
+
+test si fonctionne :
+ros2 run joy joy_node
+ros2 topic echo /joy
+
+
+5) Python environment
+
+Following modules are required:
+
+- numpy
+- opencv-python (version 4.2.0) 
+- opencv-contrib-python
+- pyautogui
+- imutils
+- sockets
+- vidgear
+- brping
+- sshpass : sudo apt-get install sshpass
+- ffmpeg
+
+### Autre commentaire :
+
+
+
+penser a mettre dans le .bashrc  le source "install/setup.bash"
+--> "source ~/quick_start_bluerov_ros2/install/setup.bash"
+
+
+penser à faire en sorte que TOUS les fichiers soient des executables (chmod +x)
+
+
+-------------
+
+pour occulus :
+
+https://github.com/godardma/oculus_ros2
+
+
+
+
+
+
