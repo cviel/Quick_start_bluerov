@@ -5,7 +5,7 @@
 
 https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html
 
--> creer le network pour s'y connecter
+-> creer le network pour s'y connecter (A voir ensemble)
 
 
 2) installer ROS2
@@ -16,8 +16,7 @@ https://docs.ros.org/en/humble/Installation.html
 
 https://github.com/mavlink/mavros/blob/master/mavros/README.md#installation
 
-
-4) installer node_joy
+4) installer node_joy (node connection à une gamepad)
 sudo apt update
 sudo apt install ros-humble-joy
 
@@ -41,9 +40,9 @@ Following modules are required:
 - sshpass : sudo apt-get install sshpass
 - ffmpeg
 
+6) Intaller le package quick_start_bluerov à la racine
+
 ### Autre commentaire :
-
-
 
 penser a mettre dans le .bashrc  le source "install/setup.bash"
 --> "source ~/quick_start_bluerov_ros2/install/setup.bash"
