@@ -25,7 +25,6 @@ from sensor_msgs.msg import Joy, BatteryState, FluidPressure
 from std_msgs.msg import Float64, String, Bool, Float32MultiArray
 from std_srvs.srv import Trigger
 
-from message2.msg import Detection
 from scipy.spatial.transform import Rotation 
 
 import time
@@ -212,11 +211,6 @@ class IHM(Node):
     def callback_target_depth(self, msg):
         self.depth_target = msg.data
 
-    def callback_detection(self, msg):
-        self.detected = msg.detected
-        self.detected_x = msg.x
-        self.detected_y = msg.y
-
     def callback_battery_state(self, msg):
         self.battery_state = round(msg.voltage, 2)
 
@@ -330,14 +324,6 @@ class IHM(Node):
             self.callback_press,
             self.qos_profile)
             #self.queue_listener)
-        self.subscription  # prevent unused variable warning
-
-        #rospy.Subscriber(self.ns+"/cam_detection", Detection, self.callback_detection)
-        self.subscription = self.create_subscription(
-            Detection,
-            self.ns+'/cam_detection',
-            self.callback_detection,
-            self.queue_listener)
         self.subscription  # prevent unused variable warning
 
 
