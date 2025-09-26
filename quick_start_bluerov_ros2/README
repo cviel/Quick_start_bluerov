@@ -1,16 +1,22 @@
 
 
-
 1) installer QGroundControl :
 
 https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html
 
--> creer le network pour s'y connecter (A voir ensemble)
+-> creer le network Ethernet pour s'y connecter (Adresse ip PC écrite sur le tube du ROV (192.168.XX.XX et le mask 255.255.255.0)
 
-tenter de se connecter en ssh une 1er fois
+Installer sshpass:
+sudo apt-get install sshpass
+
+et tenter de vous connecter en ssh une 1er fois
+
 ping (adresse ip)  <- est ce que l'on recoit un message ?
 ssh pi@(adresse ip)  <- se connecter en ssh au bluerov
 mot de passe : companion
+
+NOTE : à chaque allumage du ROV, vous devez vous connecter avec QGroundControl une première fois et attendre que la barre verte soit rempli ("ready to fly") 
+-> le logiciel initialise des variables que le MAVROS n'initialise pas.
 
 
 2) installer ROS2
@@ -20,20 +26,21 @@ https://docs.ros.org/en/humble/Installation.html
 3) installer MAVROS2
 
 https://github.com/mavlink/mavros/blob/master/mavros/README.md#installation
+-> remplacer les "kinematic" par votre version de ROS2 (exemple : "humble")
 
 4) installer node_joy (node connection à une gamepad)
 sudo apt update
 sudo apt install ros-humble-joy
 
-test si fonctionne :
+test si le noeud fonctionne :
 ros2 run joy joy_node
 ros2 topic echo /joy
-
+et observer les changements en bougeant les joystick/les boutons de la manette
 
 5) Python environment
 
-Following modules are required:
-
+The following modules are required: 
+pip install (...)
 - numpy
 - opencv-python (version 4.2.0) 
 - opencv-contrib-python
@@ -42,23 +49,26 @@ Following modules are required:
 - sockets
 - vidgear
 - brping
-- sshpass : sudo apt-get install sshpass
 - ffmpeg
+(+ sshpass si vous ne l'avez pas déjà fait)
 
-6) Intaller le package quick_start_bluerov à la racine
+6) Intaller le package "quick_start_bluerov" à la racine
 
-### Autre commentaire :
+- télécharger le dossier
+- colcon build
+- source install/setup.bash
 
 penser a mettre dans le .bashrc  le source "install/setup.bash"
 --> "source ~/quick_start_bluerov_ros2/install/setup.bash"
 
+Vous pouvez tenter de lancer le ROV avec le fichier launch associé au nom du robot
+ros2 launch bluerov_launch0 px4_((nom du rov).launch
 
-penser à faire en sorte que TOUS les fichiers soient des executables (chmod +x)
+---------------------------------------
+POUR LE GROUPE UTILISANT LE SONAR OCULUS :
+---------------------------------------
 
-
--------------
-
-pour occulus :
+installer le driver pour l'occulus :
 
 https://github.com/godardma/oculus_ros2
 
