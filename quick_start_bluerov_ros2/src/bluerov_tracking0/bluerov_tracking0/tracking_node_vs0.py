@@ -213,6 +213,11 @@ class Tracker(Node):
         else:
             self.ns = ""
 
+            
+        print("self.port_udp = ", self.port_udp)
+        print("ns = ", self.ns)
+        print('nom ROV = ', self.ROV_name)
+        
         #self.Affichage = int(rospy.get_param('~affichage_on','1')) # <- la valeur par defaut ne marche pas...
         self.declare_parameter('affichage_on', 1.0)
         self.Affichage = self.get_parameter('affichage_on').get_parameter_value().double_value
@@ -359,12 +364,13 @@ class Tracker(Node):
 
     def run(self):
 
+
         if not self.video.frame_available():
             # continue
             print('wait frame...') # pour remplacer le continue ?
 
         else: 
-            
+
 
             self.frame = self.video.frame()
             self.display_img = self.frame.copy()

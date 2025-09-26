@@ -211,6 +211,7 @@ class IHM(Node):
     def callback_target_depth(self, msg):
         self.depth_target = msg.data
 
+
     def callback_battery_state(self, msg):
         self.battery_state = round(msg.voltage, 2)
 
