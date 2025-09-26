@@ -7,6 +7,11 @@ https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/downloa
 
 -> creer le network pour s'y connecter (A voir ensemble)
 
+tenter de se connecter en ssh une 1er fois
+ping (adresse ip)  <- est ce que l'on recoit un message ?
+ssh pi@(adresse ip)  <- se connecter en ssh au bluerov
+mot de passe : companion
+
 
 2) installer ROS2
 
