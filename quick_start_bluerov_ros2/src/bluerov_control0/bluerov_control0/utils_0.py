@@ -323,8 +323,10 @@ class ROV(Node):
 
             # activation d'un programme (au coder plus bas) avec le bouton "B"
             if (self.button('B') != 0):
+                if (self.program_B == True):
                     self.program_B = False
-            elif (self.program_B == False):
+
+                elif (self.program_B == False):
                     self.program_B = True
 
             ##### Lecture des input de la manette
@@ -349,10 +351,11 @@ class ROV(Node):
         
         # (...)
 
-        ######## Programme a activer/desactive avec bouton "B" ############
+        ######## Programme a activer/desactive en appuyant sur le bouton "B" ############
         if self.program_B:
 
-            self.name_program_B = "Tensegrety control"
+            self.name_program_B = "(votre nom de programme pour afficher dans l'IHM)"
+            # ---> ce nom apparaitra en vert dans l'IHM quand "self.program_B = True" et en gris quand "self.program_B = Flase"
 
             # (...)
 
