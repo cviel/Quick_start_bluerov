@@ -64,6 +64,21 @@ penser a mettre dans le .bashrc  le source "install/setup.bash"
 Vous pouvez tenter de lancer le ROV avec le fichier launch associé au nom du robot
 ros2 launch bluerov_launch0 px4_((nom du rov).launch
 
+7) Pour piloter les lumières
+
+Sur certains bluerovs du labo (inky et pinky entre autre), les lumières ont été connectés à la raspberry et non sur l'autopilote sur à des anciens bugs de l'OS (résoulu depuis par le fabricant, mais les config n'ont pas été remodifiés sur ces robots).
+Pour controler ces lumières, des codes ont été rajoutés sur la raspberry, pilotable via le node "bluerov_control0" (fonction "light_control" implémenté dans "utils_0.py").
+Ces fonctions utilisent des commandes ssh entre le pc et le robot, aussi il est INDISPENSABLE d'établir une première connexion manuelle par ssh entre pc et le robot afin d'autoriser les accès:
+
+- ouvrez un terminal
+- faite "ssh pi@(adresse_ip_robot)" (ex : ssh pi@192.168.2.2 pour un bluerov par defaut)
+- entrer le mot de passe : companion
+- faite "yes" quand on vous y invite pour autoriser les connexions entre l'ordinateur et la raspberry (ne sera demander qu'une seule fois: à la première connexion entre la raspberry et l'ordinateur)
+
+C'est bon : vous pouvez refermer la connexion avec "exit" et fermer le terminal.
+Note : manip à ne faire qu'une fois, mais pour chaque pair pc-robot que vous utiliser.
+
+
 ---------------------------------------
 POUR LE GROUPE UTILISANT LE SONAR OCULUS :
 ---------------------------------------
