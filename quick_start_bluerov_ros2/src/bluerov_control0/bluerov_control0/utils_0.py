@@ -58,7 +58,6 @@ def light_control(self,light_modif_value):
     self.pwm_light = pwm_light0
 
     
-    
     # on ecrit la valeur que l'on veut dans le fichier test.txt   TODO: retirer ce passage pour version publique
     msg_lum = str(pwm_light0) 
     password = 'companion' 
@@ -318,7 +317,7 @@ class ROV(Node):
             # light control 
             if self.button("?") != 0:  # button Back : control light intensity
                 light_modif_value = 100
-                light_control(self,light_modif_value)
+                light_control(self,light_modif_value) # augmente la lumière d'une valeur de +light_modif_value . Reset quand on dépasse les 2000pwm à 1000pwm (lumières éteintes)
 
 
             # activation d'un programme (au coder plus bas) avec le bouton "B"
