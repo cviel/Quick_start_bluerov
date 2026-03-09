@@ -1,0 +1,46 @@
+
+
+/**:
+  ros__parameters:  # pour définir des variables pour tout le monde
+    display_length_video: 800.0
+    nb_ROV : 1.0 # nombre de rov en simultané
+
+
+pollux:
+
+
+  control_pollux: # Fait référence au nom du node executé
+    ros__parameters: # Attention, il y a deux "_"
+      ROV_name: 'pollux'
+      ID: 1.0
+      param: "parameters_pollux"
+      nb_cam: 1.0
+      nb_target_cam: 1.0
+      ip_adress_light: "192.168.22"
+      num_beacon: 2.0
+
+
+  ihm_pollux : # Fait référence au nom du node executé
+    ros__parameters: # Attention, il y a deux "_"
+      ROV_name: 'pollux'
+      ID: 1.0
+
+
+  tracking_pollux: # Fait référence au nom du node executé
+    ros__parameters: # Attention, il y a deux "_"
+      ROV_name: 'pollux'
+      ID: 1.0
+      camera_port_udp: 5622.0
+      affichage_on: 0.0 # 1.0 : affichage on / 0.0 : affichage off
+      num_cam : 1.0
+      biais_viseur: 0.0
+      
+
+  affichage_pollux: # Fait référence au nom du node executé
+    ros__parameters: # Attention, il y a deux "_"
+      ROV_name: 'pollux'
+      ID: 1.0
+      biais_viseur: 0.0
+      display_length_video: 800.0
+
+
