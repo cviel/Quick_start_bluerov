@@ -21,6 +21,12 @@ setup(
     entry_points={
         'console_scripts': [
         	'tracking_node = bluerov_tracking0.tracking_node_vs0:main',
+
+       	    'affichage_node = bluerov_tracking0.affichage_cam:main',
+        	'multi_affichage_node = bluerov_tracking0.multi_affichage_cam:main',
+            'multi_affichage_light_node = bluerov_tracking0.multi_affichage_cam_light:main',
+
+
         ],
     },
 )

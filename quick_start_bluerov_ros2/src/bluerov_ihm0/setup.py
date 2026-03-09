@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
         	'ihm = bluerov_ihm0.ihm:main',
+            'multi_ihm_node = bluerov_ihm0.ihm_multi:main',
         ],
     },
 )

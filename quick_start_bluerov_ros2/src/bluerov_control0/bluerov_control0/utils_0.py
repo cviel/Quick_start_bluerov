@@ -19,9 +19,11 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data, QoSProfile
 
-import time
 
-import os
+import datetime
+import time
+import subprocess, os, signal, psutil
+
 
 #import parameters as param
 from scipy.spatial.transform import Rotation 
@@ -36,6 +38,7 @@ from sensor_msgs.msg import Imu
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Float64, String, Bool, Float32MultiArray
 
+from std_srvs.srv import Trigger #,  TriggerResponse
 
 
 import importlib
@@ -57,6 +60,7 @@ def light_control(self,light_modif_value):
 
     self.pwm_light = pwm_light0
 
+    
     
     # on ecrit la valeur que l'on veut dans le fichier test.txt   TODO: retirer ce passage pour version publique
     msg_lum = str(pwm_light0) 
@@ -116,6 +120,7 @@ class ROV(Node):
         # Robot modes
         self.armed = False
         self.program_B = False
+        self.name_program_B = "(pas de programme)"
 
         # Robot parameter
         self.depth = 0.0 # Depth
@@ -138,7 +143,18 @@ class ROV(Node):
                                  "RH": 5, "Back": 6, "Start": 7, "?": 8, "L3": 9, "R3": 10}
         self.button_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # A, B, X, Y, LH , RH , back, start, ?, L3, R3
         self.axes = [0, 0, 0, 0, 0, 0, 0, 0]
-         
+        
+
+        # enregistrement
+        self.start_record = False
+        self.record = False
+        self.record_data = False
+        self.choix_record = 0.0 # 1: record all / 2: record datas without cams / 0 : sans choix encore 
+        self.nb_choix_record = 2.0 
+        self.record_step = 0.0 # etape de selection du mode d'enregistrement
+          
+
+
         # ROS
         #### listener
         self.qos_profile = QoSProfile(
@@ -154,6 +170,9 @@ class ROV(Node):
         # liste des publishers
         self.command_pub = self.create_publisher(OverrideRCIn,self.ns+'/mavros/rc/override', self.queue_listener)
         self.program_B_name_pub = self.create_publisher(String,self.ns+"/program_B_name", self.queue_listener) 
+
+        self.choice_record_pub = self.create_publisher(Float32MultiArray,self.ns+"/choice_record", self.queue_listener) 
+        self.enregistrement_pub = self.create_publisher(Bool, self.ns+'/enregistrement_en_cours',  self.queue_listener)
 
         #####################
 
@@ -189,6 +208,15 @@ class ROV(Node):
         msg.data = self.name_program_B
         self.program_B_name_pub.publish(msg)
         
+        msg1 = [self.record_step,self.choix_record]
+        msg = Float32MultiArray(data = msg1)
+        self.choice_record_pub.publish(msg)
+
+        # booléen si on enregistre
+        msg = Bool(data = self.start_record)
+        self.enregistrement_pub.publish(msg)
+
+
 
     def callback_heading(self, msg):
         self.heading = msg.data
@@ -317,7 +345,7 @@ class ROV(Node):
             # light control 
             if self.button("?") != 0:  # button Back : control light intensity
                 light_modif_value = 100
-                light_control(self,light_modif_value) # augmente la lumière d'une valeur de +light_modif_value . Reset quand on dépasse les 2000pwm à 1000pwm (lumières éteintes)
+                light_control(self,light_modif_value)
 
 
             # activation d'un programme (au coder plus bas) avec le bouton "B"
@@ -359,13 +387,140 @@ class ROV(Node):
             # (...)
 
         ####################################################################
+        # selection de l'enregistrement           
+        #"""
+        if (self.axes[6] != 0)&((self.record_step == 1)|(self.record_step == 2)):
+                
+            if self.axes[6] > 0.5:
+                self.choix_record = 1
+                print('record data+cam selected')
+                print('Press "Y" again')
+                self.record_step = 2 # etape suivante
+            elif self.axes[6] < -0.5:
+                self.choix_record = 2   
+                print('record data without cam selected')
+                print('Press "Y" again')
+                self.record_step = 2 # etape suivante
 
-        self.send_commands()
+
+        if (self.button("Y") != 0):  # button Y : record
+            
+
+            if self.record_step == 0: # si premiere demande
+
+                print('Record : select one choice')
+                print(' <- : record data+cam /-> : record data without cam') 
+                self.record_step += 1 # demande du choix
+
+            if self.record_step == -1: 
+                self.record_step = 0
+
+            # BBYY
+            if (self.record_step > 1): # si choix fait OU si enregistrement deja en cours
+                
+
+                if (self.choix_record == 1)&(self.record_step == 2): # 0 : par defaut en cas de probleme
+                    self.record = not self.record
+                    
+                    self.record_step = self.record_step+1
+
+                    print('choix 1 fait')
+                    time.sleep(0.5)
+
+
+                elif (self.choix_record == 2)&(self.record_step == 2):
+                    self.record_data = not self.record_data
+
+                    self.record_step = self.record_step+1
+
+                    print('choix 2 fait')
+
+                    time.sleep(0.5)
+
+
+                # si on a demande d'arreter, reset variable    
+                elif (self.record_step > 3):
+
+                    self.record_step = -1 # <- pk -1 ? car bug a la ... ou il relance immediatement l'enregistrement. Ca corrige en le faisant passer directement a 0 plutot qu a 1
+                    self.choix_record = 0
+                    print('Stop recording.')
+                    time.sleep(0.5)
+
+                else:
+                    self.record_step += 1 # demande du choix
+
+            
+            print("self.record_step = ", self.record_step)
+
+        self.function_rosbag()
+
+        ##################################################
+        self.send_commands()  # publisher general, pas que commande
         self.commands_old = self.commands
 
 
+#### Pour enregistrement
+
+
+
+    def function_rosbag(self):
+
+
+        if (self.record_step > 2)&(self.start_record == False):
             
+            if self.record_data == True:
+                add_title = '_without_cam'
+            else :
+                add_title = ''
             
+            # create directory to stock data
+            ROOT_DIR = os.path.expanduser('~')
+            self.filename0 =  ROOT_DIR + "/quick_start_bluerov_ros2/rosbag/" 
+
+            current_date_and_time = datetime.datetime.now()
+            current_date_and_time_string = str(current_date_and_time)[0:10] + '-' +  str(current_date_and_time)[11:13]+'-'+str(current_date_and_time)[14:16]+'-'+ str(current_date_and_time)[17:19]                 #[0:19] : keep only seconds
+            path =  self.filename0 + self.ROV_name + add_title +'_' + current_date_and_time_string
+            os.mkdir(path)
+        
+            # start rosbag
+            print("Start recording...")
+            if self.record_data == True:
+                command = 'ros2 bag record -a -x "(.*)/cam_1/compressed|/(.*)/cam_2/compressed"' # enregistre tout sauf les cameras (pour gain de memoire)
+                self.record = False # (qu'un seul enregistrement a la fois)
+            else:
+                command = "ros2 bag record -a"  # enregistre tout
+                self.record_data = False  # (qu'un seul enregistrement a la fois)
+
+            
+            dir_save_bagfile = path
+            self.p = subprocess.Popen(command, stdin=subprocess.PIPE, shell=True, cwd=dir_save_bagfile)
+            
+            self.path = path # dossier principal d'enregistrement
+            self.start_record = True
+
+        elif (self.choix_record == 0)&(self.start_record == True):
+
+            self.start_record = False
+            # stop enregistrement rosbag
+            self.terminate_process_and_children(self.p)   
+
+
+########## pour rosbag, terminer l'enregistrement
+# https://answers.ros.org/question/10714/start-and-stop-rosbag-within-a-python-script/
+
+
+    def terminate_process_and_children(self,p):
+              
+        process = psutil.Process(p.pid)
+        for sub_process in process.children(recursive=True):
+            sub_process.send_signal(signal.SIGINT)
+        p.wait()  # we wait for children to terminate
+        p.terminate()
+
+
+
+
+
 def main(args=None):
 
 

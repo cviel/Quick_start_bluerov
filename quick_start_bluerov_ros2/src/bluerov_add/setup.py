@@ -1,13 +1,11 @@
 from setuptools import find_packages, setup
 
-package_name = 'bluerov_control0'
-
+package_name = 'bluerov_add'
 
 setup(
     name=package_name,
     version='0.0.0',
-    #packages=find_packages(exclude=['test']),
-    packages=[package_name],
+    packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -22,13 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'control_bluerov = bluerov_control0.utils_0:main',
-            'Mini_MAVROS=bluerov_control0.Mini_MAVROS:main',
+        	'joy_switch = bluerov_add.joy_switch_ROV_control:main'
         ],
     },
 )
-
-
-
-
-
